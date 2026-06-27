@@ -1,6 +1,6 @@
-# My Shell in Go
+# A Shell both in C and Go
 
-A mini-shell developed in Go.
+I mainly used this project as a means to understnad the C and Go, their difference and similarities and to test to what limits I can push them each towards.
 
 ## Table of Contents
 - [Overview](#overview)
