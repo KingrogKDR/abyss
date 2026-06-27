@@ -1,7 +1,7 @@
 #ifndef READER_H
 #define READER_H
 
-#include "structs.h"
+#include "customs.h"
 
 ShellString read_input();
 

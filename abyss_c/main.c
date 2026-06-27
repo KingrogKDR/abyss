@@ -1,5 +1,6 @@
+#include "customs.h"
 #include "reader.h"
-#include "structs.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 // REPL (read eval print loop)
@@ -22,7 +23,9 @@
 int main() {
   while (1) {
     ShellString input = read_input();
-    write(STDOUT_FILENO, "You typed: ", 11);
+    if (!input.data) {
+      perror("input data is not found");
+    }
     write(STDOUT_FILENO, input.data, input.len);
     free(input.data);
     input.data = NULL;

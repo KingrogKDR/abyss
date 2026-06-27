@@ -1,28 +1,24 @@
-#ifndef STRUCTS_H
-#define STRUCTS_H
+#ifndef CUSTOMS_H
+#define CUSTOMS_H
 
 #include <stddef.h>
 
 /* A custom string that is size-aware */
-typedef struct ShellString {
+typedef struct {
   char *data;
   size_t len;
 } ShellString;
-
-// typedef struct Reader {
-//   char *input;
-// } Reader;
 
 /* Function pointer for the evaluator.
  * Takes the reader input and returns the evaluated result.
  */
 typedef char *(*EvalFn)(const char *input);
 
-typedef struct Evaluator {
+typedef struct {
   EvalFn eval;
 } Evaluator;
 
-typedef struct Writer {
+typedef struct {
   char *output;
 } Writer;
 
