@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-/* A function pointer to a function that acts like the defer function in Go */
+/* A pointer to a function that acts like the defer function in Go */
 typedef void *(*DeferFn)(void *);
 
 /* A deferred function */
@@ -21,6 +21,6 @@ typedef struct {
 
 #define defer(stack, fn, arg) defer_push((&stack), (DeferFn)(fn), (arg))
 
-void defer_push(DeferStack *s, DeferFn fn, void *arg);
+void defer_run(DeferStack *s);
 
 #endif

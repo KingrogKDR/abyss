@@ -12,8 +12,12 @@ ShellString read_input() {
   ssize_t n = read(STDIN_FILENO, buf, 1023);
   if (n <= 0) {
     free(buf);
-    buf = NULL;
     return (ShellString){0};
+  }
+  if (buf[n - 1] == '\n') {
+    buf[--n] = '\0';
+  } else {
+    buf[n] = '\0';
   }
 
   return (ShellString){

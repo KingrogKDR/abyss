@@ -9,4 +9,6 @@ ShellString to_shellstr(char *cstring) {
   };
 }
 
-void print_shellstr(ShellString s) { write(STDOUT_FILENO, s.data, s.len); }
+void print_shellstr(const ShellString s) {
+  write(STDOUT_FILENO, s.data, s.len);
+}

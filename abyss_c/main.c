@@ -1,6 +1,6 @@
 #include "customs.h"
+#include "evaluator.h"
 #include "reader.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 // REPL (read eval print loop)
@@ -23,12 +23,12 @@
 int main() {
   while (1) {
     ShellString input = read_input();
-    if (!input.data) {
-      perror("input data is not found");
+    if (input.data) {
+      write(STDOUT_FILENO, input.data, input.len);
+      eval_command(input);
+      // process the result
+      free(input.data);
     }
-    write(STDOUT_FILENO, input.data, input.len);
-    free(input.data);
-    input.data = NULL;
   }
   return 0;
 }

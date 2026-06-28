@@ -6,3 +6,10 @@ void defer_push(DeferStack *s, DeferFn fn, void *arg) {
       .arg = arg,
   };
 }
+
+void defer_run(DeferStack *s) {
+  while (s->len) {
+    Deferred d = s->stack[--s->len];
+    d.fn(d.arg);
+  }
+}
