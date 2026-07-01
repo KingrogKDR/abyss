@@ -6,7 +6,7 @@
 /* A pointer to a function that acts like the defer function in Go */
 typedef void *(*DeferFn)(void *);
 
-/* A deferred function */
+/* A deferred function struct */
 typedef struct {
   DeferFn fn;
   void *arg;

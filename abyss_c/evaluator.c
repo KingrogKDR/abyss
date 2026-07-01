@@ -1,18 +1,31 @@
-#include "customs.h"
+#include "evaluator.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 #define MAX_ARGS 64
 
-// Todo: implement a custom tokenizer later
-int split_input(ShellString s, char **argv) {
-  if (!s.data) {
+static const char *builtin_commands[] = {"cd", "exit", "alias", "echo"};
+
+Evaluator *eval_init(void) {
+  Evaluator *ev = calloc(1, sizeof(Evaluator));
+  if (!ev) {
+    return NULL;
+  }
+  ev->built_ins = builtin_commands;
+  ev->builtin_len = sizeof(builtin_commands) / sizeof(builtin_commands[0]);
+  return ev;
+}
+
+// Todo: implement a custom tokenizer and parser later
+int split_input(char *s, const char **argv) {
+  if (!s) {
     return 0;
   }
 
   int argc = 0;
-  char *token = strtok(s.data, " ");
+  char *token = strtok(s, " ");
 
   while (token != NULL) {
     if (argc >= MAX_ARGS) {
@@ -28,13 +41,31 @@ int split_input(ShellString s, char **argv) {
   return argc;
 }
 
-void is_valid_command(const char *first_word) {}
+int search_builtins(Evaluator *ev, const char *cmd) {
+  for (int i = 0; i < ev->builtin_len; i++) {
+    int res = strcmp(ev->built_ins[i], cmd);
+    if (res == 0) {
+      return i;
+    }
+  }
+  return -1;
+}
 
-void eval_command(ShellString s) {
-  char *argv[MAX_ARGS + 1]; // because we store an extra null
-  int argc = split_input(s, argv);
+void execute_builtin(int argc, const char **argv) { const char *cmd = argv[0]; }
+
+void eval_command(Evaluator *ev, char *cmd_input) {
+  const char *argv[MAX_ARGS + 1]; // because we store an extra null
+  int argc = split_input(cmd_input, argv);
 
   if (argc <= 0) {
     return;
+  }
+
+  int searchRes = search_builtins(ev, argv[0]);
+  if (searchRes == -1) {
+    // fork
+    // search for the executable using execvp
+  } else {
+    execute_builtin(argc, argv);
   }
 }

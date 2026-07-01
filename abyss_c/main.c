@@ -1,6 +1,6 @@
-#include "customs.h"
 #include "evaluator.h"
 #include "reader.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 // REPL (read eval print loop)
@@ -21,13 +21,18 @@
 // too much memory
 
 int main() {
+  Evaluator *ev = eval_init();
+  if (!ev) {
+    perror("eval init failed");
+    exit(EXIT_FAILURE);
+  }
+  printf("Ev_len: %zu\n", ev->builtin_len);
   while (1) {
-    ShellString input = read_input();
-    if (input.data) {
-      write(STDOUT_FILENO, input.data, input.len);
-      eval_command(input);
+    char *input = read_input();
+    if (input) {
+      eval_command(ev, input);
       // process the result
-      free(input.data);
+      free(input);
     }
   }
   return 0;

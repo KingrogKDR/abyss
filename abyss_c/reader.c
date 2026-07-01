@@ -1,18 +1,22 @@
-#include "customs.h"
-#include "shell_strings.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
-ShellString read_input() {
-  ShellString prompt = to_shellstr("abyss > ");
-  print_shellstr(prompt);
+char *read_input() {
+  char *prompt = "abyss > ";
+  write(STDOUT_FILENO, prompt, strlen(prompt));
 
   char *buf = malloc(1024);
+  if (!buf) {
+    perror("malloc: couldn't create buffer");
+    exit(EXIT_FAILURE);
+  }
 
   ssize_t n = read(STDIN_FILENO, buf, 1023);
   if (n <= 0) {
     free(buf);
-    return (ShellString){0};
+    return "";
   }
   if (buf[n - 1] == '\n') {
     buf[--n] = '\0';
@@ -20,8 +24,5 @@ ShellString read_input() {
     buf[n] = '\0';
   }
 
-  return (ShellString){
-      .data = buf,
-      .len = n,
-  };
+  return buf;
 }
