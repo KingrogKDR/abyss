@@ -1,8 +1,9 @@
+#include "errors.h"
 #include "evaluator.h"
 #include "reader.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
 // REPL (read eval print loop)
 
 // Data stuctures
@@ -23,10 +24,8 @@
 int main() {
   Evaluator *ev = eval_init();
   if (!ev) {
-    perror("eval init failed");
-    exit(EXIT_FAILURE);
+    exit_with_failure("failed initialing evaluator");
   }
-  printf("Ev_len: %zu\n", ev->builtin_len);
   while (1) {
     char *input = read_input();
     if (input) {

@@ -21,6 +21,6 @@ typedef struct {
 
 #define defer(stack, fn, arg) defer_push((&stack), (DeferFn)(fn), (arg))
 
-void defer_run(DeferStack *s);
+void defer_run(DeferStack *);
 
 #endif
