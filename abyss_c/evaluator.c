@@ -1,27 +1,25 @@
 #include "evaluator.h"
 #include "builtins.h"
+#include "command.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
+
 #define MAX_ARGS 64
 
-static const char *builtin_commands[] = {"cd", "exit", "alias", "echo", "pwd"};
-
-int compare_strs(const char *s, const char *t) { return strcmp(s, t); }
-
-Evaluator *eval_init(void) {
-  Evaluator *ev = calloc(1, sizeof(Evaluator));
-  if (!ev) {
-    return NULL;
-  }
-  ev->built_ins = builtin_commands;
-  ev->builtin_len = sizeof(builtin_commands) / sizeof(builtin_commands[0]);
-  return ev;
-}
+static const command_t builtin_commands[] = {
+    {.name = "cd", .execute = cd_func},
+    {.name = "exit", .execute = exit_func},
+    {.name = "alias", .execute = alias_func},
+    {.name = "echo", .execute = echo_func},
+    {.name = "pwd", .execute = pwd_func},
+};
 
 // Todo: implement a custom tokenizer and parser later
-int split_input(char *s, const char **argv) {
+int split_input(char *s, char **argv) {
   if (!s) {
     return 0;
   }
@@ -43,47 +41,47 @@ int split_input(char *s, const char **argv) {
   return argc;
 }
 
-int search_builtins(Evaluator *ev, const char *cmd) {
-  for (int i = 0; i < ev->builtin_len; i++) {
-    int res = compare_strs(ev->built_ins[i], cmd);
+const command_t *search_builtins(const char *exe) {
+  size_t builtin_len = sizeof(builtin_commands) / sizeof(builtin_commands[0]);
+  for (size_t i = 0; i < builtin_len; i++) {
+    int res = strcmp(builtin_commands[i].name, exe);
     if (res == 0) {
-      return i;
+      return &builtin_commands[i];
     }
   }
-  return -1;
+  return NULL;
 }
 
-void execute_builtin(int argc, const char **argv) {
-  const char *cmd = argv[0];
-  if (compare_strs(cmd, "cd") == 0) {
-    cd_func(argc, argv);
-  } else if (compare_strs(cmd, "exit") == 0) {
-    exit_func();
-  } else if (compare_strs(cmd, "alias") == 0) {
-    alias_func(argc, argv);
-  } else if (compare_strs(cmd, "echo") == 0) {
-    echo_func(argc, argv);
-  } else if (compare_strs(cmd, "pwd") == 0) {
-    pwd_func();
+int external_execute(int argc, char **argv) {
+  pid_t pid = fork();
+
+  if (pid == 0) {
+    execvp(argv[0], argv);
+    perror(argv[0]);
+    _exit(EXIT_FAILURE);
+  } else if (pid < 0) {
+    perror("fork");
+    return 1;
   }
+
+  int status;
+  waitpid(pid, &status, 0);
+
+  return WIFEXITED(status) ? WEXITSTATUS(status) : 1;
 }
 
-void eval_command(Evaluator *ev, char *cmd_input) {
-  const char *argv[MAX_ARGS + 1]; // because we store an extra null
+void eval_command(char *cmd_input) {
+  char *argv[MAX_ARGS + 1]; // because we store an extra null
   int argc = split_input(cmd_input, argv);
 
   if (argc <= 0) {
     return;
   }
-
-  int searchRes = search_builtins(ev, argv[0]);
-  if (searchRes == -1) {
-    // external command
-    // check if it exists
-    // if yes
-    // fork
-    // search for the executable using execvp
+  const command_t *cmd = search_builtins(argv[0]);
+  int status;
+  if (cmd) {
+    status = cmd->execute(argc, argv);
   } else {
-    execute_builtin(argc, argv);
+    status = external_execute(argc, argv);
   }
 }

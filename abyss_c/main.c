@@ -1,4 +1,3 @@
-#include "errors.h"
 #include "evaluator.h"
 #include "reader.h"
 #include <stdlib.h>
@@ -22,14 +21,10 @@
 // too much memory
 
 int main() {
-  Evaluator *ev = eval_init();
-  if (!ev) {
-    exit_with_failure("failed initialing evaluator");
-  }
   while (1) {
     char *input = read_input();
     if (input) {
-      eval_command(ev, input);
+      eval_command(input);
       // process the result
       free(input);
     }

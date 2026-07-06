@@ -1,4 +1,3 @@
-#include "errors.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +9,7 @@ char *read_input() {
 
   char *buf = malloc(1024);
   if (!buf) {
-    exit_with_failure("failed creating buffer");
+    fprintf(stderr, "failed creating buffer");
   }
 
   ssize_t n = read(STDIN_FILENO, buf, 1023);

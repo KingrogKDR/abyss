@@ -3,33 +3,32 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void cd_func(int argc, const char **argv) {
+int cd_func(int argc, char **argv) {
   if (argc > 2) {
-    perror("cd: too many arguments");
-    return;
+    fprintf(stderr, "cd: too many arguments\n");
+    return 1;
   } else {
-    const char *directory;
-    if (argc == 1) {
-      directory = getenv("HOME");
-      if (!directory) {
-        perror("failed getting home env");
-        return;
-      }
-    } else {
-      directory = argv[1];
+    const char *directory = (argc == 1) ? getenv("HOME") : argv[1];
+
+    if (!directory) {
+      fprintf(stderr, "cd: HOME not set\n");
+      return 1;
     }
-    int res = chdir(directory);
-    if (res == -1) {
-      perror("failed changing directory");
-      return;
+
+    if (chdir(directory) == -1) {
+      perror("cd");
+      return 1;
     }
   }
+  return 0;
 }
 
-void exit_func(void) { exit(0); }
+// TODO: make it more sophisticated with actual exit
+int exit_func(int argc, char **argv) { exit(0); }
 
-void alias_func(int argc, const char **argv) {}
+// TODO
+int alias_func(int argc, char **argv) { return 0; }
 
-void echo_func(int argc, const char **argv) {}
+int echo_func(int argc, char **argv) { return 0; }
 
-void pwd_func() {}
+int pwd_func(int argc, char **argv) { return 0; }
