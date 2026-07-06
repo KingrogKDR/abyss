@@ -1,6 +1,5 @@
-#include "evaluator.h"
 #include "builtins.h"
-#include "command.h"
+#include "custom.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,7 +69,7 @@ int external_execute(int argc, char **argv) {
   return WIFEXITED(status) ? WEXITSTATUS(status) : 1;
 }
 
-void eval_command(char *cmd_input) {
+void eval_command(Shell *shell, char *cmd_input) {
   char *argv[MAX_ARGS + 1]; // because we store an extra null
   int argc = split_input(cmd_input, argv);
 
@@ -80,7 +79,8 @@ void eval_command(char *cmd_input) {
   const command_t *cmd = search_builtins(argv[0]);
   int status;
   if (cmd) {
-    status = cmd->execute(argc, argv);
+    status = cmd->execute(shell, argc, argv);
+    shell->last_exit_status = status;
   } else {
     status = external_execute(argc, argv);
   }

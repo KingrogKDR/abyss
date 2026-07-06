@@ -1,10 +1,12 @@
 #ifndef BUILTINS_H
 #define BUILTINS_H
 
-int cd_func(int, char **);
-int exit_func(int, char **);
-int alias_func(int, char **);
-int echo_func(int, char **);
-int pwd_func(int, char **);
+#include "custom.h"
+
+int cd_func(Shell *, int, char **);
+int exit_func(Shell *, int, char **);
+int alias_func(Shell *, int, char **);
+int echo_func(Shell *, int, char **);
+int pwd_func(Shell *, int, char **);
 
 #endif

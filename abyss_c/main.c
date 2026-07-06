@@ -1,3 +1,4 @@
+#include "custom.h"
 #include "evaluator.h"
 #include "reader.h"
 #include <stdlib.h>
@@ -21,10 +22,11 @@
 // too much memory
 
 int main() {
+  Shell shell = {0};
   while (1) {
     char *input = read_input();
     if (input) {
-      eval_command(input);
+      eval_command(&shell, input);
       // process the result
       free(input);
     }
